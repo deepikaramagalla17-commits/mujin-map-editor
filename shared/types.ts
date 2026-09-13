@@ -1,6 +1,6 @@
-type Direction = "North" | "South" | "East" | "West";
+export type Direction = "North" | "South" | "East" | "West";
 
-interface MapNode {
+export interface MapNode {
         x: number;
         y: number;
         code: number;
@@ -10,15 +10,15 @@ interface MapNode {
         name?: string;
 }
 
-interface Charger {
+export interface Charger {
     direction: Direction;
 }
 
-interface Chute {
+export interface Chute {
     direction: Direction;
 }
 
-interface MapFile {
+export interface MapFile {
     map: {
         maxNeighborDistance: number;
         nodes: MapNode[];
