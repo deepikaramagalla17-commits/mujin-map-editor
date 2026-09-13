@@ -25,6 +25,23 @@ describe("computeEdges", () => {
     ];
     expect(computeEdges(nodes, 1500)).toHaveLength(0);
   });
+
+  it("finds neighbours when nodes are not ordered by position", () => {
+    const nodes = [
+      { x: 1000, y: 2700, code: 1 },
+      { x: 1000, y: 1000, code: 2 },
+      { x: 1000, y: 1900, code: 3 },
+    ];
+    expect(computeEdges(nodes, 1000)).toHaveLength(2);
+  });
+
+  it("does not duplicate an edge for nodes with identical coordinates", () => {
+    const nodes = [
+      { x: 1000, y: 1000, code: 1 },
+      { x: 1000, y: 1000, code: 2 },
+    ];
+    expect(computeEdges(nodes, 0)).toHaveLength(1);
+  });
 });
 
 describe("computeViewBox", () => {

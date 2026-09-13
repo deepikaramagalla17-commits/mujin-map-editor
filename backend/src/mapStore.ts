@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 function getDataFile(): string {
-  return process.env.MAP_DATA_FILE || path.join(__dirname, "..", "data", "map.json");
+  return process.env.MAP_DATA_FILE || path.join(process.cwd(), "data", "map.json");
 }
 
 export function loadMap(): MapFile {

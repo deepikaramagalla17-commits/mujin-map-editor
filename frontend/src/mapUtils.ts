@@ -13,29 +13,66 @@ export function computeEdges(
   nodes: MapNode[],
   maxNeighborDistance: number,
 ): Edge[] {
+  if (maxNeighborDistance < 0 || Number.isNaN(maxNeighborDistance)) {
+    return [];
+  }
+
   const edges: Edge[] = [];
+  const connectedPairs = new Set<string>();
+  const nodesByX = new Map<number, number[]>();
+  const nodesByY = new Map<number, number[]>();
 
-  // Compare every unique pair of nodes exactly once.
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i];
-      const b = nodes[j];
+  nodes.forEach((node, index) => {
+    const xGroup = nodesByX.get(node.x) ?? [];
+    xGroup.push(index);
+    nodesByX.set(node.x, xGroup);
 
-      const sameX = a.x === b.x;
-      const sameY = a.y === b.y;
+    const yGroup = nodesByY.get(node.y) ?? [];
+    yGroup.push(index);
+    nodesByY.set(node.y, yGroup);
+  });
 
-      // Only connect nodes that share an x or y coordinate.
-      if (!sameX && !sameY) {
-        continue;
-      }
+  function addEdges(groups: Map<number, number[]>, coordinate: "x" | "y") {
+    for (const indices of groups.values()) {
+      const distanceCoordinate = coordinate === "x" ? "y" : "x";
+      indices.sort((firstIndex, secondIndex) =>
+        nodes[firstIndex][distanceCoordinate] -
+          nodes[secondIndex][distanceCoordinate],
+      );
 
-      const distance = sameX ? Math.abs(a.y - b.y) : Math.abs(a.x - b.x);
+      let windowStart = 0;
+      for (let current = 0; current < indices.length; current++) {
+        const currentIndex = indices[current];
+        const currentNode = nodes[currentIndex];
+        const currentPosition = coordinate === "x" ? currentNode.y : currentNode.x;
 
-      if (distance <= maxNeighborDistance) {
-        edges.push({ from: a, to: b });
+        while (
+          windowStart < current &&
+          currentPosition -
+            (coordinate === "x"
+              ? nodes[indices[windowStart]].y
+              : nodes[indices[windowStart]].x) >
+            maxNeighborDistance
+        ) {
+          windowStart++;
+        }
+
+        for (let previous = windowStart; previous < current; previous++) {
+          const previousIndex = indices[previous];
+          const pairKey = `${Math.min(previousIndex, currentIndex)}:${Math.max(previousIndex, currentIndex)}`;
+
+          if (!connectedPairs.has(pairKey)) {
+            connectedPairs.add(pairKey);
+            edges.push({ from: nodes[previousIndex], to: currentNode });
+          }
+        }
       }
     }
   }
+
+  addEdges(nodesByX, "x");
+  addEdges(nodesByY, "y");
+
   return edges;
 }
 
