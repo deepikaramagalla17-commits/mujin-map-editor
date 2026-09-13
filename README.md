@@ -93,8 +93,6 @@ docker run --rm -p 3001:3001 agv-map-editor
 
 **Current status:** The backend Docker build completes successfully. The frontend build is currently blocked by a platform-specific dependency issue in the Vite/Rolldown toolchain. The application runs successfully when the frontend and backend are built locally. A production follow-up would be to pin a compatible Vite/Rollup version or build the frontend separately and copy the generated static files into the image.
 
-The container is configured to persist map data at `/app/backend/data/map.json` through `MAP_DATA_FILE` and serve the frontend from `FRONTEND_DIST_DIR`.
-
 The container uses `/app/backend/data/map.json` for persistence (`MAP_DATA_FILE`) and serves the frontend build from `FRONTEND_DIST_DIR`, both set as environment variables in the Dockerfile.
 
 ## API
